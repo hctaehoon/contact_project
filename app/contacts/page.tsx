@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import { Typography, Grid, Paper, Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, IconButton, InputBase } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
-import QRCode from 'qrcode.react';
+import { QRCodeSVG } from 'qrcode.react';
+import Image from 'next/image';
 
 const departments = [
   '대표',
@@ -19,24 +20,24 @@ const departments = [
 ];
 
 // vCard 파일을 생성하고 다운로드하는 함수
-const generateVCard = (contact: Contact) => {
-  const vCardData = `
-BEGIN:VCARD
-VERSION:3.0
-FN:${contact.name}
-TEL:${contact.phone_number}
-TEL;TYPE=WORK,VOICE:${contact.internal_number}
-END:VCARD
-  `;
+// const generateVCard = (contact: Contact) => {
+//   const vCardData = `
+// BEGIN:VCARD
+// VERSION:3.0
+// FN:${contact.name}
+// TEL:${contact.phone_number}
+// TEL;TYPE=WORK,VOICE:${contact.internal_number}
+// END:VCARD
+//   `;
 
-  const blob = new Blob([vCardData], { type: 'text/vcard' });
-  const url = window.URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${contact.name}.vcf`;  // 파일 이름 설정
-  a.click();
-  window.URL.revokeObjectURL(url);
-};
+//   const blob = new Blob([vCardData], { type: 'text/vcard' });
+//   const url = window.URL.createObjectURL(blob);
+//   const a = document.createElement('a');
+//   a.href = url;
+//   a.download = `${contact.name}.vcf`;  // 파일 이름 설정
+//   a.click();
+//   window.URL.revokeObjectURL(url);
+// };
 
 interface Contact {
   name: string;
@@ -127,29 +128,17 @@ END:VCARD`;
       }}
     >
       {/* 로고 이미지 */}
-      <Box
-        sx={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          height: '100px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: '#f4f6f8',
-          zIndex: 1000,
+      <Image
+        src="/dmtlogo.png"
+        alt="DMT 로고"
+        width={80}
+        height={80}
+        style={{
+          position: 'absolute',
+          top: '20px',
+          left: '20px',
         }}
-      >
-        <img
-          src="/dmtlogo.png"
-          alt="DMT 로고"
-          style={{
-            width: '80px',
-            height: 'auto',
-          }}
-        />
-      </Box>
+      />
 
       <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', textAlign: 'center', marginBottom: '20px' }}>
         AS DMT CONTACT
@@ -317,7 +306,7 @@ END:VCARD`;
           </DialogTitle>
           <DialogContent>
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 2 }}>
-              <QRCode value={generateVCardData(selectedContact)} size={256} />
+              <QRCodeSVG value={generateVCardData(selectedContact)} size={256} />
             </Box>
             <Typography variant="body2" align="center">
               이 QR 코드를 스캔하여 연락처를 저장하세요.
