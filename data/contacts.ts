@@ -1,9 +1,9 @@
 export const contacts = [
-    { id: 1, department: "설비/기술팀", name: "정태훈 사원", phone_number: "01055036406", internal_number: "03180633513" },
-    { id: 2, department: "설비/기술팀", name: "이성민 팀장", phone_number: "01086670306", internal_number: "03180633510" },
-    { id: 3, department: "설비/기술팀", name: "김태건 과장", phone_number: "01081262618", internal_number: "03180633501" },
+    { id: 1, department: "설비/기술팀", name: "이성민 팀장", phone_number: "01086670306", internal_number: "03180633510" },
+    { id: 2, department: "설비/기술팀", name: "김태건 과장", phone_number: "01081262618", internal_number: "03180633501" },
+    { id: 3, department: "설비/기술팀", name: "한동권 실장", phone_number: "01033449425", internal_number: "03180633504" },
     { id: 4, department: "설비/기술팀", name: "천을수 대리", phone_number: "01023515815", internal_number: "03180633524" },
-    { id: 5, department: "설비/기술팀", name: "한동권 실장", phone_number: "01033449425", internal_number: "03180633504" },
+    { id: 5, department: "설비/기술팀", name: "정태훈 사원", phone_number: "01055036406", internal_number: "03180633513" },
     { id: 6, department: "설비/기술팀", name: "김찬우 사원", phone_number: "01082841590", internal_number: "" },
     { id: 7, department: "대표", name: "김원식 부사장", phone_number: "01093893880", internal_number: "" },
     { id: 8, department: "경영지원팀", name: "김정수 팀장", phone_number: "01071843880", internal_number: "03180633500" },
