@@ -16,6 +16,7 @@ export async function GET(req: NextRequest) {
     const contacts = await fetchContactsByDepartment();  // 부서별로 정렬된 연락처 데이터 가져오기
     return NextResponse.json(contacts);
   } catch (error) {
+    console.error('Failed to fetch contacts:',error);
     return NextResponse.json({ error: 'Failed to fetch contacts' }, { status: 500 });
   }
 }

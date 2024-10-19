@@ -1,4 +1,3 @@
-// app/contacts/page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -18,11 +17,38 @@ const departments = [
   '기타',
 ];
 
+// vCard 파일을 생성하고 다운로드하는 함수
+const generateVCard = (contact: Contact) => {
+  const vCardData = `
+BEGIN:VCARD
+VERSION:3.0
+FN:${contact.name}
+TEL:${contact.phone_number}
+TEL;TYPE=WORK,VOICE:${contact.internal_number}
+END:VCARD
+  `;
+
+  const blob = new Blob([vCardData], { type: 'text/vcard' });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${contact.name}.vcf`;  // 파일 이름 설정
+  a.click();
+  window.URL.revokeObjectURL(url);
+};
+
+interface Contact {
+  name: string;
+  phone_number: string;
+  internal_number: string;
+  department: string;
+}
+
 export default function ContactsPage() {
-  const [contacts, setContacts] = useState([]);
+  const [contacts, setContacts] = useState<Contact[]>([]);
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
-  const [selectedContact, setSelectedContact] = useState(null);
+  const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
@@ -48,7 +74,7 @@ export default function ContactsPage() {
     setSearchTerm('');  // 부서를 클릭하면 검색어를 초기화
   };
 
-  const handleContactClick = (contact: any) => {
+  const handleContactClick = (contact: Contact) => {
     setSelectedContact(contact);
     setOpenDialog(true);
   };
@@ -218,9 +244,7 @@ export default function ContactsPage() {
               전화걸기
             </Button>
             <Button
-              onClick={() => {
-                alert(`${selectedContact.name}님을 전화번호부에 저장했습니다.`);
-              }}
+              onClick={() => generateVCard(selectedContact)}
               color="primary"
             >
               전화번호부에 저장
