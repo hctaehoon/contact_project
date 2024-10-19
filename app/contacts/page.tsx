@@ -6,6 +6,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
 import { QRCodeSVG } from 'qrcode.react';
 import Image from 'next/image';
+import html2canvas from 'html2canvas';
 import jsQR from 'jsqr';
 
 const departments = [
@@ -57,6 +58,8 @@ export default function ContactsPage() {
   const [isScanning, setIsScanning] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [scannedData, setScannedData] = useState<string | null>(null);
+  const qrCodeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchContacts = async () => {
@@ -158,6 +161,29 @@ END:VCARD`;
       }
       if (isScanning) {
         requestAnimationFrame(tick);
+      }
+    }
+  };
+
+  const handleScanQRCode = async () => {
+    if (qrCodeRef.current) {
+      try {
+        const canvas = await html2canvas(qrCodeRef.current);
+        const context = canvas.getContext('2d');
+        if (context) {
+          const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+          const code = jsQR(imageData.data, imageData.width, imageData.height);
+          
+          if (code) {
+            setScannedData(code.data);
+            // 여기서 스캔된 데이터를 처리합니다 (예: 연락처 저장)
+            console.log("Scanned QR code:", code.data);
+          } else {
+            console.log("QR 코드를 찾을 수 없습니다.");
+          }
+        }
+      } catch (error) {
+        console.error("QR 코드 스캔 중 오류 발생:", error);
       }
     }
   };
@@ -353,18 +379,19 @@ END:VCARD`;
           </DialogTitle>
           <DialogContent>
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-              <QRCodeSVG value={generateVCardData(selectedContact)} size={256} />
+              <div ref={qrCodeRef}>
+                <QRCodeSVG value={generateVCardData(selectedContact)} size={256} />
+              </div>
               <Typography variant="body2" align="center">
-                이 QR 코드를 다른 기기로 스캔하여 연락처를 저장하세요.
+                이 QR 코드를 스캔하여 연락처를 저장하세요.
               </Typography>
-              <Button variant="contained" color="primary" onClick={startScanner}>
-                QR 코드 스캔 시작
+              <Button variant="contained" color="primary" onClick={handleScanQRCode}>
+                QR 코드 스캔
               </Button>
-              {isScanning && (
-                <Box sx={{ position: 'relative', width: '100%', maxWidth: '300px', aspectRatio: '4/3' }}>
-                  <video ref={videoRef} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  <canvas ref={canvasRef} style={{ display: 'none' }} />
-                </Box>
+              {scannedData && (
+                <Typography variant="body2" align="center">
+                  스캔 결과: {scannedData}
+                </Typography>
               )}
             </Box>
           </DialogContent>
