@@ -6,7 +6,6 @@ import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
 import Image from 'next/image';
 import { QRCodeSVG } from 'qrcode.react';
-import html2canvas from 'html2canvas';
 import jsQR from 'jsqr';
 
 const departments = [
@@ -35,7 +34,6 @@ export default function ContactsPage() {
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [qrCodeOpen, setQrCodeOpen] = useState(false);
-  const [isScanning, setIsScanning] = useState(false);
   const [scannedData, setScannedData] = useState<string | null>(null);
   const qrCodeRef = useRef<HTMLDivElement>(null);
 
@@ -104,7 +102,6 @@ END:VCARD`;
     if (qrCodeRef.current) {
       try {
         const html2canvasModule = await import('html2canvas');
-        
         const canvas = await html2canvasModule.default(qrCodeRef.current);
         const context = canvas.getContext('2d');
         if (context) {
