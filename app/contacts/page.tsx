@@ -4,8 +4,8 @@ import { useState, useEffect, useRef } from 'react';
 import { Typography, Grid, Paper, Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, IconButton, InputBase } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
-import { QRCodeSVG } from 'qrcode.react';
 import Image from 'next/image';
+import { QRCodeSVG } from 'qrcode.react';
 import html2canvas from 'html2canvas';
 import jsQR from 'jsqr';
 
@@ -20,26 +20,6 @@ const departments = [
   '통근버스',
   '기타',
 ];
-
-// vCard 파일을 생성하고 다운로드하는 함수
-// const generateVCard = (contact: Contact) => {
-//   const vCardData = `
-// BEGIN:VCARD
-// VERSION:3.0
-// FN:${contact.name}
-// TEL:${contact.phone_number}
-// TEL;TYPE=WORK,VOICE:${contact.internal_number}
-// END:VCARD
-//   `;
-
-//   const blob = new Blob([vCardData], { type: 'text/vcard' });
-//   const url = window.URL.createObjectURL(blob);
-//   const a = document.createElement('a');
-//   a.href = url;
-//   a.download = `${contact.name}.vcf`;  // 파일 이름 설정
-//   a.click();
-//   window.URL.revokeObjectURL(url);
-// };
 
 interface Contact {
   name: string;
@@ -56,8 +36,6 @@ export default function ContactsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [qrCodeOpen, setQrCodeOpen] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [scannedData, setScannedData] = useState<string | null>(null);
   const qrCodeRef = useRef<HTMLDivElement>(null);
 
@@ -122,53 +100,12 @@ END:VCARD`;
     return false;  // 초기에는 아무것도 표시하지 않음
   });
 
-  const startScanner = async () => {
-    setIsScanning(true);
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.play();
-        requestAnimationFrame(tick);
-      }
-    } catch (error) {
-      console.error('Error accessing camera:', error);
-      setIsScanning(false);
-    }
-  };
-
-  const tick = () => {
-    if (videoRef.current && canvasRef.current) {
-      if (videoRef.current.readyState === videoRef.current.HAVE_ENOUGH_DATA) {
-        canvasRef.current.height = videoRef.current.videoHeight;
-        canvasRef.current.width = videoRef.current.videoWidth;
-        const context = canvasRef.current.getContext('2d');
-        if (context) {
-          context.drawImage(videoRef.current, 0, 0, canvasRef.current.width, canvasRef.current.height);
-          const imageData = context.getImageData(0, 0, canvasRef.current.width, canvasRef.current.height);
-          const code = jsQR(imageData.data, imageData.width, imageData.height);
-          
-          if (code) {
-            console.log("Found QR code", code.data);
-            // 여기서 스캔된 QR 코드 데이터를 처리합니다.
-            // 예: 연락처 정보를 파싱하고 저장하는 로직
-            setIsScanning(false);
-            if (videoRef.current.srcObject instanceof MediaStream) {
-              videoRef.current.srcObject.getTracks().forEach(track => track.stop());
-            }
-          }
-        }
-      }
-      if (isScanning) {
-        requestAnimationFrame(tick);
-      }
-    }
-  };
-
   const handleScanQRCode = async () => {
     if (qrCodeRef.current) {
       try {
-        const canvas = await html2canvas(qrCodeRef.current);
+        const html2canvasModule = await import('html2canvas');
+        
+        const canvas = await html2canvasModule.default(qrCodeRef.current);
         const context = canvas.getContext('2d');
         if (context) {
           const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
@@ -176,7 +113,6 @@ END:VCARD`;
           
           if (code) {
             setScannedData(code.data);
-            // 여기서 스캔된 데이터를 처리합니다 (예: 연락처 저장)
             console.log("Scanned QR code:", code.data);
           } else {
             console.log("QR 코드를 찾을 수 없습니다.");
