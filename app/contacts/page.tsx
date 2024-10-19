@@ -275,26 +275,20 @@ END:VCARD`;
             <Button onClick={handleCloseDialog} color="secondary">
               취소
             </Button>
-            <Button
+            <IconButton
               onClick={() => {
                 window.open(`tel:${selectedContact.phone_number}`);
               }}
-              color="primary"
-              startIcon={<PhoneIcon />}
               sx={{
                 backgroundColor: '#4CD964',  // iOS 통화 버튼 색상
                 color: 'white',
-                borderRadius: '50%',
-                minWidth: '50px',
-                width: '50px',
-                height: '50px',
                 '&:hover': {
                   backgroundColor: '#45C359',  // 호버 시 약간 어두운 색상
                 },
               }}
             >
               <PhoneIcon />
-            </Button>
+            </IconButton>
             <Button
               onClick={handleQrCodeOpen}
               color="primary"
