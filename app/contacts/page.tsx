@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Typography, Grid, Paper, Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, IconButton, InputBase } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
+import QRCode from 'qrcode.react';
 
 const departments = [
   '대표',
@@ -50,6 +51,7 @@ export default function ContactsPage() {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [qrCodeOpen, setQrCodeOpen] = useState(false);
 
   useEffect(() => {
     const fetchContacts = async () => {
@@ -84,6 +86,23 @@ export default function ContactsPage() {
     setSelectedContact(null);
   };
 
+  const handleQrCodeOpen = () => {
+    setQrCodeOpen(true);
+  };
+
+  const handleQrCodeClose = () => {
+    setQrCodeOpen(false);
+  };
+
+  const generateVCardData = (contact: Contact) => {
+    return `BEGIN:VCARD
+VERSION:3.0
+FN:${contact.name}
+TEL:${contact.phone_number}
+TEL;TYPE=WORK,VOICE:${contact.internal_number}
+END:VCARD`;
+  };
+
   const filteredContacts = contacts.filter((contact) => {
     if (searchTerm) {
       // 검색어와 이름을 모두 소문자로 변환하여 비교
@@ -102,26 +121,37 @@ export default function ContactsPage() {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
         backgroundColor: '#f4f6f8',
         padding: 3,
-        position: 'relative',
+        paddingTop: '120px', // 로고를 위한 상단 여백 추가
       }}
     >
-      {/* 왼쪽 상단에 고정된 로고 이미지 */}
-      <img
-        src="/dmtlogo.png"
-        alt="DMT 로고"
-        style={{
-          position: 'absolute',
-          top: '20px',
-          left: '20px',
-          width: '80px',
-          height: 'auto',
+      {/* 로고 이미지 */}
+      <Box
+        sx={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '100px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#f4f6f8',
+          zIndex: 1000,
         }}
-      />
+      >
+        <img
+          src="/dmtlogo.png"
+          alt="DMT 로고"
+          style={{
+            width: '80px',
+            height: 'auto',
+          }}
+        />
+      </Box>
 
-      <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', textAlign: 'center' }}>
+      <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', textAlign: 'center', marginBottom: '20px' }}>
         AS DMT CONTACT
       </Typography>
 
@@ -129,36 +159,24 @@ export default function ContactsPage() {
       <Box
         sx={{
           display: 'flex',
-          justifyContent: 'center',
+          flexDirection: 'column',
           alignItems: 'center',
           gap: 2,
-          flexWrap: 'wrap',
           marginBottom: 4,
+          width: '100%',
         }}
       >
-        {/* 부서 목록 */}
-        {departments.map((department) => (
-          <Button
-            key={department}
-            variant="contained"
-            onClick={() => handleDepartmentClick(department)}
-            sx={{ minWidth: '100px', marginBottom: '10px' }}
-          >
-            {department}
-          </Button>
-        ))}
-
         {/* 검색 입력 필드 */}
         <Box
           sx={{
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
             backgroundColor: '#ffffff',
             borderRadius: '20px',
             boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
             padding: '10px 20px',
             width: '300px',
+            maxWidth: '100%',
           }}
         >
           <SearchIcon sx={{ marginRight: '10px', color: '#888' }} />
@@ -166,8 +184,8 @@ export default function ContactsPage() {
             placeholder="이름으로 검색"
             value={searchTerm}
             onChange={(e) => {
-              setSearchTerm(e.target.value);  // 검색어 설정
-              setSelectedDepartment('');  // 검색어 입력 시 부서 초기화
+              setSearchTerm(e.target.value);
+              setSelectedDepartment('');
             }}
             sx={{
               width: '100%',
@@ -176,9 +194,36 @@ export default function ContactsPage() {
             }}
           />
         </Box>
+
+        {/* 부서 목록 */}
+        <Box
+          sx={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            gap: 1,
+            maxWidth: '600px', // 부서 버튼들의 최대 너비 설정
+          }}
+        >
+          {departments.map((department) => (
+            <Button
+              key={department}
+              variant="contained"
+              onClick={() => handleDepartmentClick(department)}
+              sx={{ 
+                minWidth: '100px', 
+                margin: '5px',
+                flexGrow: 1,
+                flexBasis: 'calc(33.333% - 10px)', // 3열로 표시
+              }}
+            >
+              {department}
+            </Button>
+          ))}
+        </Box>
       </Box>
 
-      {/* 선택된 부서의 연락처 또는 검색 결과만 표시 */}
+      {/* 연락처 목록 */}
       {filteredContacts.length > 0 && (
         <Grid container spacing={2} justifyContent="center">
           {filteredContacts.map((contact, index) => (
@@ -206,7 +251,7 @@ export default function ContactsPage() {
         </Grid>
       )}
 
-      {/* 연락처 클릭 시 나오는 다이얼로그 */}
+      {/* 연락처 상세 정보 다이얼로그 */}
       {selectedContact && (
         <Dialog open={openDialog} onClose={handleCloseDialog}>
           <DialogTitle>
@@ -244,12 +289,40 @@ export default function ContactsPage() {
               전화걸기
             </Button>
             <Button
-              onClick={() => generateVCard(selectedContact)}
+              onClick={handleQrCodeOpen}
               color="primary"
             >
-              전화번호부에 저장
+              QR 코드 보기
             </Button>
           </DialogActions>
+        </Dialog>
+      )}
+
+      {/* QR 코드 다이얼로그 */}
+      {selectedContact && (
+        <Dialog open={qrCodeOpen} onClose={handleQrCodeClose}>
+          <DialogTitle>
+            QR 코드 스캔하여 연락처 저장
+            <IconButton
+              aria-label="close"
+              onClick={handleQrCodeClose}
+              sx={{
+                position: 'absolute',
+                right: 8,
+                top: 8,
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+          </DialogTitle>
+          <DialogContent>
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 2 }}>
+              <QRCode value={generateVCardData(selectedContact)} size={256} />
+            </Box>
+            <Typography variant="body2" align="center">
+              이 QR 코드를 스캔하여 연락처를 저장하세요.
+            </Typography>
+          </DialogContent>
         </Dialog>
       )}
     </Box>
