@@ -7,7 +7,9 @@ import SearchIcon from '@mui/icons-material/Search';
 import Image from 'next/image';
 import { QRCodeSVG } from 'qrcode.react';
 import jsQR from 'jsqr';
+import { saveAs } from 'file-saver';
 
+console.log("debug..")
 const departments = [
   '대표',
   '경영지원팀',
@@ -118,6 +120,24 @@ END:VCARD`;
       } catch (error) {
         console.error("QR 코드 스캔 중 오류 발생:", error);
       }
+    }
+  };
+
+  const handleSaveContact = (contact: Contact) => {
+    const vCardData = generateVCardData(contact);
+    const blob = new Blob([vCardData], { type: 'text/vcard;charset=utf-8' });
+    const fileName = `${contact.name}.vcf`;
+
+    // 모바일 기기 감지
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    if (isMobile) {
+      // 모바일에서는 vCard 데이터를 직접 열기
+      const url = URL.createObjectURL(blob);
+      window.location.href = url;
+    } else {
+      // 데스크톱에서는 파일 다운로드
+      saveAs(blob, fileName);
     }
   };
 
@@ -297,7 +317,7 @@ END:VCARD`;
       {selectedContact && (
         <Dialog open={qrCodeOpen} onClose={handleQrCodeClose} fullWidth maxWidth="sm">
           <DialogTitle>
-            QR 코드 스캔하여 연락처 저장
+            QR 코드로 연락처 저장
             <IconButton
               aria-label="close"
               onClick={handleQrCodeClose}
@@ -316,16 +336,15 @@ END:VCARD`;
                 <QRCodeSVG value={generateVCardData(selectedContact)} size={256} />
               </div>
               <Typography variant="body2" align="center">
-                이 QR 코드를 스캔하여 연락처를 저장하세요.
+                이 QR 코드를 스캔하여 연락처를 저장하세요. (PC 화면에 띄운 상태로 스마트폰 촬영)
               </Typography>
-              <Button variant="contained" color="primary" onClick={handleScanQRCode}>
-                QR 코드 스캔
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => handleSaveContact(selectedContact)}
+              >
+                연락처 저장
               </Button>
-              {scannedData && (
-                <Typography variant="body2" align="center">
-                  스캔 결과: {scannedData}
-                </Typography>
-              )}
             </Box>
           </DialogContent>
         </Dialog>
