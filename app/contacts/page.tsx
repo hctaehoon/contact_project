@@ -1,15 +1,13 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Typography, Grid, Paper, Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, IconButton, InputBase } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
 import Image from 'next/image';
 import { QRCodeSVG } from 'qrcode.react';
-import jsQR from 'jsqr';
-import { saveAs } from 'file-saver';
+import PhoneIcon from '@mui/icons-material/Phone';  // 추가된 import
 
-console.log("debug..")
 const departments = [
   '대표',
   '경영지원팀',
@@ -36,8 +34,6 @@ export default function ContactsPage() {
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [qrCodeOpen, setQrCodeOpen] = useState(false);
-  const [scannedData, setScannedData] = useState<string | null>(null);
-  const qrCodeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchContacts = async () => {
@@ -100,29 +96,6 @@ END:VCARD`;
     return false;  // 초기에는 아무것도 표시하지 않음
   });
 
-  const handleScanQRCode = async () => {
-    if (qrCodeRef.current) {
-      try {
-        const html2canvasModule = await import('html2canvas');
-        const canvas = await html2canvasModule.default(qrCodeRef.current);
-        const context = canvas.getContext('2d');
-        if (context) {
-          const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-          const code = jsQR(imageData.data, imageData.width, imageData.height);
-          
-          if (code) {
-            setScannedData(code.data);
-            console.log("Scanned QR code:", code.data);
-          } else {
-            console.log("QR 코드를 찾을 수 없습니다.");
-          }
-        }
-      } catch (error) {
-        console.error("QR 코드 스캔 중 오류 발생:", error);
-      }
-    }
-  };
-
   const handleSaveContact = (contact: Contact) => {
     const vCardData = generateVCardData(contact);
     const blob = new Blob([vCardData], { type: 'text/vcard;charset=utf-8' });
@@ -137,7 +110,14 @@ END:VCARD`;
       window.location.href = url;
     } else {
       // 데스크톱에서는 파일 다운로드
-      saveAs(blob, fileName);
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
     }
   };
 
@@ -300,8 +280,20 @@ END:VCARD`;
                 window.open(`tel:${selectedContact.phone_number}`);
               }}
               color="primary"
+              startIcon={<PhoneIcon />}
+              sx={{
+                backgroundColor: '#4CD964',  // iOS 통화 버튼 색상
+                color: 'white',
+                borderRadius: '50%',
+                minWidth: '50px',
+                width: '50px',
+                height: '50px',
+                '&:hover': {
+                  backgroundColor: '#45C359',  // 호버 시 약간 어두운 색상
+                },
+              }}
             >
-              전화걸기
+              <PhoneIcon />
             </Button>
             <Button
               onClick={handleQrCodeOpen}
@@ -332,9 +324,7 @@ END:VCARD`;
           </DialogTitle>
           <DialogContent>
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-              <div ref={qrCodeRef}>
-                <QRCodeSVG value={generateVCardData(selectedContact)} size={256} />
-              </div>
+              <QRCodeSVG value={generateVCardData(selectedContact)} size={256} />
               <Typography variant="body2" align="center">
                 이 QR 코드를 스캔하여 연락처를 저장하세요. (PC 화면에 띄운 상태로 스마트폰 촬영)
               </Typography>
