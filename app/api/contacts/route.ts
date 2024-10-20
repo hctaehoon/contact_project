@@ -19,7 +19,8 @@ export async function GET(req: NextRequest) {
     // 부서별 연락처 데이터 가져오기
     const contacts = await fetchContactsByDepartment();
     return NextResponse.json(contacts);
-  } catch (error) {
+  } catch {
+    // error 변수를 사용하지 않으므로 제거
     return NextResponse.json({ error: '토큰이 유효하지 않습니다.' }, { status: 403 });
   }
 }
