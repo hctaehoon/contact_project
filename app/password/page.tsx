@@ -41,22 +41,23 @@ export default function PasswordPage() {
       },
       body: JSON.stringify({ password }),
     });
-
+  
     if (res.ok) {
       const data = await res.json();
       
       const tokenExpiryDate = new Date();
       tokenExpiryDate.setDate(tokenExpiryDate.getDate() + 30); // 30일 유효기간 설정
-
-      // 토큰과 만료 시간을 localStorage에 저장
+  
+      // 토큰과 만료 시간을 localStorage에 저장 (문자열로 변환)
       localStorage.setItem('token', data.token);
-      localStorage.setItem('tokenExpiry', tokenExpiryDate.getTime()); // 만료 시간 저장 (밀리초)
-
+      localStorage.setItem('tokenExpiry', tokenExpiryDate.getTime().toString()); // 숫자를 문자열로 변환하여 저장
+  
       router.push('/contacts'); // 연락처 페이지로 이동
     } else {
       setError('비밀번호가 틀렸습니다.');
     }
-  };
+};
+
 
   return (
     <Box
