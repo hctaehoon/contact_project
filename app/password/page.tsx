@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Typography, TextField, Button, Box } from '@mui/material';
 
@@ -9,6 +9,30 @@ export default function PasswordPage() {
   const [error, setError] = useState('');
   const router = useRouter();
 
+  // 1. 토큰 유효성 검사 함수
+  const isTokenValid = () => {
+    const token = localStorage.getItem('token');
+    const tokenExpiry = localStorage.getItem('tokenExpiry');
+    
+    // 토큰과 유효기간이 모두 있는지 확인
+    if (token && tokenExpiry) {
+      const expiryDate = new Date(parseInt(tokenExpiry, 10)); // 저장된 만료일
+      const currentDate = new Date(); // 현재 시간
+
+      // 만료일이 현재 시간보다 이후인지 확인
+      return currentDate < expiryDate;
+    }
+    return false;
+  };
+
+  // 2. 페이지가 로드될 때 토큰 확인 및 리디렉션
+  useEffect(() => {
+    if (isTokenValid()) {
+      router.push('/contacts'); // 토큰이 유효하면 바로 이동
+    }
+  }, []); // 컴포넌트 로드시 한 번 실행
+
+  // 3. 비밀번호 제출 함수
   const handlePasswordSubmit = async () => {
     const res = await fetch('/api/auth', {
       method: 'POST',
@@ -20,8 +44,15 @@ export default function PasswordPage() {
 
     if (res.ok) {
       const data = await res.json();
-      localStorage.setItem('token', data.token);  // JWT를 저장
-      router.push('/contacts');  // 연락처 페이지로 이동
+      
+      const tokenExpiryDate = new Date();
+      tokenExpiryDate.setDate(tokenExpiryDate.getDate() + 30); // 30일 유효기간 설정
+
+      // 토큰과 만료 시간을 localStorage에 저장
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('tokenExpiry', tokenExpiryDate.getTime()); // 만료 시간 저장 (밀리초)
+
+      router.push('/contacts'); // 연락처 페이지로 이동
     } else {
       setError('비밀번호가 틀렸습니다.');
     }
