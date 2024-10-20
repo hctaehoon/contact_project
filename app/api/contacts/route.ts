@@ -3,12 +3,6 @@ import { verifyAccessToken, signToken, verifyRefreshToken } from '@/lib/auth';
 import { refreshTokens } from '@/lib/store';
 import { fetchContactsByDepartment } from './contactService';
 
-interface JWTError extends Error {
-  name: string;
-  message: string;
-  expiredAt?: Date;
-}
-
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get('Authorization');
   const token = authHeader?.split(' ')[1];
@@ -21,7 +15,7 @@ export async function GET(req: NextRequest) {
     verifyAccessToken(token);
     const contacts = await fetchContactsByDepartment();
     return NextResponse.json(contacts);
-  } catch (error: JWTError) {
+  } catch (error: any) {
     if (error.name === 'TokenExpiredError') {
       const refreshToken = req.cookies.get('refreshToken')?.value;
 
@@ -33,7 +27,7 @@ export async function GET(req: NextRequest) {
         verifyRefreshToken(refreshToken);
         const newAccessToken = signToken({ user: 'authorized' });
         return NextResponse.json({ token: newAccessToken });
-      } catch (refreshError) {
+      } catch {
         return NextResponse.json({ error: '리프레시 토큰 검증 실패' }, { status: 403 });
       }
     }
