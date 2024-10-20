@@ -54,7 +54,7 @@ const fetchWithToken = async (url: string, options = {}) => {
 
 export default function PasswordPage() {
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [errorMsg, setErrorMsg] = useState(''); // `error` 대신 `errorMsg`로 변경
   const router = useRouter();
 
   // 1. 토큰 유효성 검사 함수
@@ -102,10 +102,10 @@ export default function PasswordPage() {
 
         router.push('/contacts'); // 연락처 페이지로 이동
       } else {
-        setError('비밀번호가 틀렸습니다.');
+        setErrorMsg('비밀번호가 틀렸습니다.'); // `error` 대신 `errorMsg`로 변경
       }
     } catch (error) {
-      setError('네트워크 오류로 인증에 실패했습니다.');
+      setErrorMsg('네트워크 오류로 인증에 실패했습니다.'); // `error` 대신 `errorMsg`로 변경
     }
   };
 
@@ -134,9 +134,9 @@ export default function PasswordPage() {
         sx={{ marginBottom: 2, width: '300px' }}
       />
 
-      {error && (
+      {errorMsg && (
         <Typography color="error" sx={{ marginBottom: 2 }}>
-          {error}
+          {errorMsg}
         </Typography>
       )}
 
