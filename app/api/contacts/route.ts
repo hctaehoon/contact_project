@@ -1,14 +1,18 @@
 // 변경 전에는 JWT 토큰을 검증하는 로직이 있었음
+
+
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAccessToken } from '@/lib/auth';
+import { fetchContactsByDepartment } from './contactService';
 
 export async function GET(req: NextRequest) {
-  const authHeader = req.headers.get('Authorization');
-  const token = authHeader?.split(' ')[1];
-
-  if (!token) {
-    return NextResponse.json({ error: '토큰이 없습니다.' }, { status: 401 });
+  try {
+    const contacts = await fetchContactsByDepartment();
+    return NextResponse.json(contacts);
+  } catch {
+    return NextResponse.json({ error: '연락처 데이터를 가져오는 중 오류가 발생했습니다.' }, { status: 500 });
   }
+}  
+
 
   try {
     verifyAccessToken(token);
