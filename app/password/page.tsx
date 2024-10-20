@@ -4,9 +4,15 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Typography, TextField, Button, Box } from '@mui/material';
 
+interface FetchOptions {
+  headers?: Record<string, string>;
+  method?: string;
+  body?: string;
+}
+
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // 토큰 만료 확인 후 자동 갱신을 위한 함수
-const fetchWithToken = async (url: string, options = {}) => {
+const fetchWithToken = async (url: string, options: FetchOptions = {}) => {
   try {
     const token = localStorage.getItem('token');
     const res = await fetch(url, {
