@@ -1,7 +1,6 @@
+// 변경 전에는 JWT 토큰을 검증하는 로직이 있었음
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAccessToken, signToken, verifyRefreshToken } from '@/lib/auth';
-import { refreshTokens } from '@/lib/store';
-import { fetchContactsByDepartment } from './contactService';
+import { verifyAccessToken } from '@/lib/auth';
 
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get('Authorization');
@@ -15,22 +14,7 @@ export async function GET(req: NextRequest) {
     verifyAccessToken(token);
     const contacts = await fetchContactsByDepartment();
     return NextResponse.json(contacts);
-  } catch (error: unknown) {  // error를 unknown 타입으로 지정
-    if (error instanceof Error && error.name === 'TokenExpiredError') {
-      const refreshToken = req.cookies.get('refreshToken')?.value;
-
-      if (!refreshToken || !refreshTokens.includes(refreshToken)) {
-        return NextResponse.json({ error: '리프레시 토큰이 유효하지 않습니다.' }, { status: 403 });
-      }
-
-      try {
-        verifyRefreshToken(refreshToken);
-        const newAccessToken = signToken({ user: 'authorized' });
-        return NextResponse.json({ token: newAccessToken });
-      } catch {
-        return NextResponse.json({ error: '리프레시 토큰 검증 실패' }, { status: 403 });
-      }
-    }
+  } catch (error) {
     return NextResponse.json({ error: '토큰이 유효하지 않습니다.' }, { status: 403 });
   }
 }
