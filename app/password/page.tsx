@@ -9,14 +9,14 @@ export default function PasswordPage() {
   const [error, setError] = useState('');
   const router = useRouter();
 
-  // 1. 토큰 유효성 검사 함수
-  const isTokenValid = () => {
-    const token = localStorage.getItem('token');
-    const tokenExpiry = localStorage.getItem('tokenExpiry');
+  // 1. 비밀번호 유효성 검사 함수
+  const isPasswordValid = () => {
+    const passwordSaved = localStorage.getItem('passwordSaved');
+    const passwordExpiry = localStorage.getItem('passwordExpiry');
     
-    // 토큰과 유효기간이 모두 있는지 확인
-    if (token && tokenExpiry) {
-      const expiryDate = new Date(parseInt(tokenExpiry, 10)); // 저장된 만료일
+    // 비밀번호가 저장되었고 유효기간이 있는지 확인
+    if (passwordSaved && passwordExpiry) {
+      const expiryDate = new Date(parseInt(passwordExpiry, 10)); // 저장된 만료일
       const currentDate = new Date(); // 현재 시간
 
       // 만료일이 현재 시간보다 이후인지 확인
@@ -25,39 +25,28 @@ export default function PasswordPage() {
     return false;
   };
 
-  // 2. 페이지가 로드될 때 토큰 확인 및 리디렉션
+  // 2. 페이지가 로드될 때 비밀번호 저장 여부 확인 및 리디렉션
   useEffect(() => {
-    if (isTokenValid()) {
-      router.push('/contacts'); // 토큰이 유효하면 바로 이동
+    if (isPasswordValid()) {
+      router.push('/contacts'); // 비밀번호가 유효하면 바로 이동
     }
   }, []); // 컴포넌트 로드시 한 번 실행
 
   // 3. 비밀번호 제출 함수
-  const handlePasswordSubmit = async () => {
-    const res = await fetch('/api/auth', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ password }),
-    });
+  const handlePasswordSubmit = () => {
+    if (password === '6406') { // 비밀번호 확인 (하드코딩된 비밀번호)
+      const passwordExpiryDate = new Date();
+      passwordExpiryDate.setDate(passwordExpiryDate.getDate() + 30); // 30일 유효기간 설정
   
-    if (res.ok) {
-      const data = await res.json();
-      
-      const tokenExpiryDate = new Date();
-      tokenExpiryDate.setDate(tokenExpiryDate.getDate() + 30); // 30일 유효기간 설정
-  
-      // 토큰과 만료 시간을 localStorage에 저장 (문자열로 변환)
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('tokenExpiry', tokenExpiryDate.getTime().toString()); // 숫자를 문자열로 변환하여 저장
-  
+      // 비밀번호 저장 상태와 만료 시간을 로컬 스토리지에 저장
+      localStorage.setItem('passwordSaved', 'true');
+      localStorage.setItem('passwordExpiry', passwordExpiryDate.getTime().toString()); // 만료 시간 저장
+
       router.push('/contacts'); // 연락처 페이지로 이동
     } else {
       setError('비밀번호가 틀렸습니다.');
     }
-};
-
+  };
 
   return (
     <Box
@@ -72,7 +61,7 @@ export default function PasswordPage() {
       }}
     >
       <Typography variant="h5" gutterBottom>
-        JWT 토큰 발급 비밀번호 입력
+        비밀번호 입력
       </Typography>
 
       <TextField
