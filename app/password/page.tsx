@@ -12,7 +12,7 @@ const fetchWithToken = async (url: string, options = {}) => {
     const res = await fetch(url, {
       ...options,
       headers: {
-        ...options.headers,
+        ...(options.headers || {}), // options.headers가 없을 때 기본값으로 빈 객체 사용
         Authorization: `Bearer ${token}`,
       },
     });
@@ -55,7 +55,7 @@ const fetchWithToken = async (url: string, options = {}) => {
 
 export default function PasswordPage() {
   const [password, setPassword] = useState('');
-  const [errorMsg, setErrorMsg] = useState(''); // `error` 대신 `errorMsg`로 변경
+  const [errorMsg, setErrorMsg] = useState('');
   const router = useRouter();
 
   // 1. 토큰 유효성 검사 함수
@@ -103,10 +103,10 @@ export default function PasswordPage() {
 
         router.push('/contacts'); // 연락처 페이지로 이동
       } else {
-        setErrorMsg('비밀번호가 틀렸습니다.'); // `error` 대신 `errorMsg`로 변경
+        setErrorMsg('비밀번호가 틀렸습니다.');
       }
     } catch (error) {
-      setErrorMsg('네트워크 오류로 인증에 실패했습니다.'); // `error` 대신 `errorMsg`로 변경
+      setErrorMsg('네트워크 오류로 인증에 실패했습니다.');
     }
   };
 
