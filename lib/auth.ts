@@ -1,5 +1,4 @@
-// contact_project/lib/auth.ts
-
+// lib/auth.ts
 import jwt from 'jsonwebtoken';
 
 const SECRET_KEY = process.env.SECRET_KEY || 'default_secret_key';  // 액세스 토큰 비밀 키
