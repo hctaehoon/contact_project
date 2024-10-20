@@ -6,7 +6,7 @@ import { Typography, TextField, Button, Box } from '@mui/material';
 
 export default function PasswordPage() {
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [error, setError] = useState(''); // error 변수를 사용한다면 유지
   const router = useRouter();
 
   // 1. 토큰 유효성 검사 함수
@@ -30,40 +30,9 @@ export default function PasswordPage() {
     if (isTokenValid()) {
       router.push('/contacts'); // 토큰이 유효하면 바로 이동
     }
-  }, []); // 컴포넌트 로드시 한 번 실행
+  }, [router]); // router 의존성 추가
 
-  // 3. 토큰 갱신 함수
-  const refreshToken = async () => {
-    try {
-      const res = await fetch('/api/auth/refresh', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          token: localStorage.getItem('refreshToken'),
-        }),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        const tokenExpiryDate = new Date();
-        tokenExpiryDate.setDate(tokenExpiryDate.getDate() + 30); // 30일 유효기간 설정
-  
-        // 토큰과 만료 시간을 localStorage에 저장
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('tokenExpiry', tokenExpiryDate.getTime().toString());
-
-        router.push('/contacts'); // 갱신 후 연락처 페이지로 이동
-      } else {
-        setError('토큰 갱신에 실패했습니다. 다시 로그인하세요.');
-      }
-    } catch (error) {
-      setError('네트워크 오류로 토큰 갱신에 실패했습니다.');
-    }
-  };
-
-  // 4. 비밀번호 제출 함수
+  // 3. 비밀번호 제출 함수
   const handlePasswordSubmit = async () => {
     try {
       const res = await fetch('/api/auth', {
