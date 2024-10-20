@@ -6,7 +6,6 @@ import { Typography, TextField, Button, Box } from '@mui/material';
 
 export default function PasswordPage() {
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(''); // error 변수를 사용한다면 유지
   const router = useRouter();
 
   // 1. 토큰 유효성 검사 함수
@@ -55,11 +54,9 @@ export default function PasswordPage() {
         localStorage.setItem('tokenExpiry', tokenExpiryDate.getTime().toString());
 
         router.push('/contacts'); // 연락처 페이지로 이동
-      } else {
-        setError('비밀번호가 틀렸습니다.');
       }
     } catch (error) {
-      setError('네트워크 오류로 인증에 실패했습니다.');
+      console.error('네트워크 오류로 인증에 실패했습니다.', error);
     }
   };
 
@@ -87,12 +84,6 @@ export default function PasswordPage() {
         onChange={(e) => setPassword(e.target.value)}
         sx={{ marginBottom: 2, width: '300px' }}
       />
-
-      {error && (
-        <Typography color="error" sx={{ marginBottom: 2 }}>
-          {error}
-        </Typography>
-      )}
 
       <Button variant="contained" onClick={handlePasswordSubmit}>
         접속
