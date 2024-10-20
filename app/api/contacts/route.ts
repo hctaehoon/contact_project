@@ -15,8 +15,8 @@ export async function GET(req: NextRequest) {
     verifyAccessToken(token);
     const contacts = await fetchContactsByDepartment();
     return NextResponse.json(contacts);
-  } catch (error: Error) {  // any 대신 Error 타입 사용
-    if (error.name === 'TokenExpiredError') {
+  } catch (error: unknown) {  // error를 unknown 타입으로 지정
+    if (error instanceof Error && error.name === 'TokenExpiredError') {
       const refreshToken = req.cookies.get('refreshToken')?.value;
 
       if (!refreshToken || !refreshTokens.includes(refreshToken)) {
