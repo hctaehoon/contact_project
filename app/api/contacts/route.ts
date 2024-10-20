@@ -1,24 +1,13 @@
-// 변경 전에는 JWT 토큰을 검증하는 로직이 있었음
-
-
 import { NextRequest, NextResponse } from 'next/server';
 import { fetchContactsByDepartment } from './contactService';
 
-export async function GET(req: NextRequest) {
+export async function GET(req) {
   try {
-    const contacts = await fetchContactsByDepartment();
-    return NextResponse.json(contacts);
-  } catch {
-    return NextResponse.json({ error: '연락처 데이터를 가져오는 중 오류가 발생했습니다.' }, { status: 500 });
-  }
-}  
-
-
-  try {
-    verifyAccessToken(token);
+    // 부서별 연락처 데이터를 가져오는 로직 (가정)
     const contacts = await fetchContactsByDepartment();
     return NextResponse.json(contacts);
   } catch (error) {
-    return NextResponse.json({ error: '토큰이 유효하지 않습니다.' }, { status: 403 });
+    // 오류 처리
+    return NextResponse.json({ error: '연락처 데이터를 가져오는 중 오류가 발생했습니다.' }, { status: 500 });
   }
 }
