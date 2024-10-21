@@ -149,7 +149,7 @@ END:VCARD`;
       />
 
       <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', textAlign: 'center', marginBottom: '20px' }}>
-        AS DMT CONTACT
+        안산 DMT 연락처
       </Typography>
 
       {/* 검색창과 부서 목록 */}
