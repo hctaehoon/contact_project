@@ -178,7 +178,7 @@ END:VCARD`;
         >
           <SearchIcon sx={{ marginRight: '10px', color: '#888' }} />
           <InputBase
-            placeholder="이름으로 검색"
+            placeholder="공정 - AFVI,VRS,FVI,LM,수세,RM,번들,반출입,FQA 대소문자 상관X"
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
