@@ -10,7 +10,7 @@ export const contacts = [
     { id: 9, department: "경영지원팀", name: "김려화 사원", phone_number: "01083118422", internal_number: "03180633502" },
     { id: 10, department: "생산관리팀", name: "정운교 팀장", phone_number: "01091901500", internal_number: "03180633520" },
     { id: 11, department: "생산관리팀", name: "조현석 과장", phone_number: "01062648987", internal_number: "03180633518" },
-    { id: 12, department: "생산관리팀", name: "엄태현 사원", phone_number: "01056998496", internal_number: "03180633522" },
+    { id: 12, department: "생산관리팀", name: "이주현 주임", phone_number: "01089703026", internal_number: "03180633522" },
     { id: 13, department: "품질관리팀", name: "여상덕 팀장", phone_number: "01097976615", internal_number: "03180633511" },
     { id: 14, department: "품질관리팀", name: "이슬기 대리", phone_number: "01036673094", internal_number: "03180633514" },
     { id: 15, department: "품질관리팀", name: "김슬기 사원", phone_number: "01086809079", internal_number: "03180633524" },
@@ -40,5 +40,7 @@ export const contacts = [
     { id: 39, department: "기타", name: "물류기사", phone_number: "01055577037", internal_number: "" },
     { id: 40, department: "기타", name: "식당", phone_number: "01087175335", internal_number: "" },
     { id: 41, department: "기타", name: "대전FAX", phone_number: "0429363710", internal_number: "" },
+    { id: 42, department: "품질관리팀", name: "이현진 사원", phone_number: "01077230933", internal_number: "03180633503" },
+    { id: 43, department: "품질관리팀", name: "임성수 사원", phone_number: "01082497475", internal_number: "03180633536" },
   ];
   
