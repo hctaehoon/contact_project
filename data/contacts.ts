@@ -41,8 +41,8 @@ export const contacts = [
     { id: 39, department: "기타", name: "물류기사", phone_number: "01055577037", internal_number: "" },
     { id: 40, department: "기타", name: "식당", phone_number: "01087175335", internal_number: "" },
     { id: 41, department: "기타", name: "대전FAX", phone_number: "0429363710", internal_number: "" },
-    { id: 42, department: "품질관리팀", name: "이현진 주임", phone_number: "01077230933", internal_number: "03180633503" },
-    { id: 43, department: "품질관리팀", name: "임성수 사원", phone_number: "01082497475", internal_number: "03180633536" },
+    { id: 42, department: "품질관리팀", name: "이현진 주임", phone_number: "01077230933", internal_number: "503" },
+    { id: 43, department: "품질관리팀", name: "임성수 사원", phone_number: "01082497475", internal_number: "536" },
     { id: 25, department: "품질관리팀", name: "백승현 사원", phone_number: "01045614187", internal_number: "503" },
   ];
   
