@@ -1,9 +1,9 @@
 export const contacts = [
     /* 경영지원 / 대표 / 영업 */
-    { id: 1, department: "경영지원팀/영업", name: "김원식 대표", phone_number: "01093893880", internal_number: "" },
-    { id: 2, department: "경영지원팀/영업", name: "정운교 이사", phone_number: "01091901500", internal_number: "520" },
-    { id: 3, department: "경영지원팀/영업", name: "김정수 팀장", phone_number: "01071843880", internal_number: "500" },
-    { id: 4, department: "경영지원팀/영업", name: "김려화 주임", phone_number: "01083118422", internal_number: "502" },
+    { id: 1, department: "대표", name: "김원식 대표", phone_number: "01093893880", internal_number: "" },
+    { id: 2, department: "대표", name: "정운교 이사", phone_number: "01091901500", internal_number: "520" },
+    { id: 3, department: "경영지원팀", name: "김정수 팀장", phone_number: "01071843880", internal_number: "500" },
+    { id: 4, department: "경영지원팀", name: "김려화 주임", phone_number: "01083118422", internal_number: "502" },
 
     /* 생산관리팀 */
     { id: 5, department: "생산관리팀", name: "조현석 팀장", phone_number: "01062648987", internal_number: "518" },
